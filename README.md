@@ -21,6 +21,7 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - ✅ Conversión automática de zonas horarias (Europe/Madrid → UTC)
 - ✅ Extracción de datos desde HTML mediante web scraping
 - ✅ Cobertura de tests del 85.57%
+- ✅ Tests automáticos con GitHub Actions (CI)
 
 ## Tecnologías
 
@@ -60,6 +61,17 @@ npm test
 ```
 
 Los tests incluyen cobertura de código y fixtures para validar el parsing de HTML.
+
+### Integración Continua (CI)
+
+El proyecto utiliza GitHub Actions para ejecutar tests automáticamente:
+
+- ✅ En cada push a las ramas `main`, `master` o `develop`
+- ✅ En cada Pull Request hacia estas ramas
+- ✅ Tests en múltiples versiones de Node.js (22.x, 24.x y latest)
+- ✅ Generación de reportes de cobertura
+
+El workflow de CI se encuentra en `.github/workflows/ci.yml`
 
 ## Endpoints
 
@@ -143,6 +155,9 @@ Devuelve los datos históricos de una medición específica para una estación.
 
 ```
 chd-api/
+├── .github/
+│   └── workflows/
+│       └── ci.yml               # Tests automáticos en CI
 ├── index.js                      # Servidor Express y rutas
 ├── helpers.js                    # Funciones de parsing y fetching
 ├── tests/
