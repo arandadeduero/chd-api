@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta http-equiv="Expires" content="Thu, 1 Jun 1978 06:00:00 GMT">
+	<meta http-equiv="Last-Modified" content="0">
+	<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- Tell the browser to be responsive to screen width -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>saihduero.es</title>
+<meta name="description" content="Sistema Automático de Información del Duero">
+<meta name="author" content="saihduero.es">
+
+<base href="/">
+
+<!-- Favicon icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2019">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2019">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2019">
+<link rel="manifest" href="/site.webmanifest?v=2019">
+<link rel="mask-icon" href="/safari-pinned-tab.svg?v=2019" color="#5bbad5">
+<link rel="shortcut icon" href="/favicon.ico?v=2019">
+<meta name="apple-mobile-web-app-title" content="saihduero.es">
+<meta name="application-name" content="saihduero.es">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Bootstrap Core CSS -->
+<link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- chartist CSS -->
+<!--<link href="/public/plugins/chartist-js/dist/chartist.min.css" rel="stylesheet">
+<link href="/public/plugins/chartist-js/dist/chartist-init.css" rel="stylesheet">
+<link href="/public/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css" rel="stylesheet">-->
+<link href="/public/plugins/css-chart/css-chart.css" rel="stylesheet">
+
+<!-- toast CSS -->
+<link href="/public/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
+
+<!-- Vector CSS -->
+<!--<link href="/public/plugins/vectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet">-->
+
+<!-- Popup CSS -->
+<link href="/public/plugins/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
+
+<!-- Custom CSS -->
+<link href="/css/style.css" rel="stylesheet">
+
+<!-- You can change the theme colors from here -->
+<link href="/css/colors/blue.css" id="theme" rel="stylesheet">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->	
+
+<!--<script>
+(function(i, s, o, g, r, a, m) {
+	i['GoogleAnalyticsObject'] = r;
+	i[r] = i[r] || function() {
+		(i[r].q = i[r].q || []).push(arguments)
+	}, i[r].l = 1 * new Date();
+	a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+	a.async = 1;
+	a.src = g;
+	m.parentNode.insertBefore(a, m)
+})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+ga('create', 'UA-85622565-1', 'auto');
+ga('send', 'pageview');
+</script>-->
+	
+<style>
+/*ul {
+	padding: 0;
+	list-style: none;
+}*/
+</style>
+
+<style>
+/* Start JVectorMap - mapz */
+/*.jvectormap-legend {
+	background: transparent;
+	color: black;
+	line-height: 1;
+}
+
+.jvectormap-legend .jvectormap-legend-tick-sample {
+	height: 20px;
+}
+
+.jvectormap-legend-icons {
+	background: white;
+	border: black 1px solid;
+	color: black;
+}
+
+.jvectormap-tip, .jvectormap-label {
+	z-index: 100;
+}*/
+/* End   JVectorMap - mapz */
+</style>
+
+<style>
+/* Start OpenLayers - mapol */
+/*div.olFramedCloudPopupContent {
+	font-family: Verdana;
+	font-size: 80%;
+	padding: 3px;
+}
+div.olFramedCloudPopupContent a, div.olFramedCloudPopupContent a:hover {
+	color: #60a0ff;
+	display: block;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+}
+
+div.olFramedCloudPopupContent table {
+	border: 1px dashed #a0d0ff;
+	font-size: 85%;
+	margin-top: 5px;
+	width: 100%;
+}
+div.olFramedCloudPopupContent table th, div.olFramedCloudPopupContent table td.number {
+	text-align: right;
+}
+.alerta {
+	color: orange;
+}
+.alarma {
+	color: red;
+}*/
+/* End   OpenLayers - mapol */
+</style>
+
+<style>
+.modal {
+	z-index: 2001;
+}
+</style>
+
+<style>
+/* Start dataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    border: 1px solid #0275d8;
+    background-color: #0275d8;
+}
+/* End   dataTables */
+</style>
+
+<!-- Jquery -->
+<script src="/public/plugins/jquery/jquery.min.js"></script>
+
+<!-- Bootstrap tether Core JavaScript -->
+<script src="/public/plugins/bootstrap/js/tether.min.js"></script>
+<script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- slimscrollbar scrollbar JavaScript -->
+<script src="/js/jquery.slimscroll.js"></script>
+
+<!--Wave Effects -->
+<!--<script src="js/waves.js"></script>-->
+
+<!--Menu sidebar -->
+<script src="/js/sidebarmenu.js"></script>
+
+<!--stickey kit -->
+<script src="/public/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
+
+<!--Custom JavaScript -->
+<script src="/js/custom.min.js"></script>
+
+<!-- Magnific popup JavaScript -->
+<script src="/public/plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
+<!--<script src="/public/plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js"></script>-->
+
+<script>
+function activateSidebarLink(href) {
+    var element = $('ul#sidebarnav a').filter(function() {
+        return this.href.endsWith(href);
+    }).addClass('active').parent().addClass('active');
+    while (true) {
+        if (element.is('li')) {
+            element = element.parent().addClass('in').parent().addClass('active');
+        }
+        else {
+            break;
+        }
+    }
+}    
+</script>
+
+<style>
+body {
+	font-size: 85%;
+}
+.scroll-sidebar {
+	padding: 0;
+}
+.sidebar-nav ul li a {
+	font-size: 95%;
+	padding: 14px 35px 12px 15px;
+}
+.sidebar-nav ul li.nav-devider {
+	margin: 0;
+}
+.sidebar-footer {
+	padding: 17px 15px;	
+}
+.sidebar-footer a {
+	font-size: 95%;
+	padding: 0;
+}
+@media (max-width: 767px) {
+	.topbar .navbar {
+		padding-right: 0;
+	}
+}
+.topbar .navbar .navbar-header {
+	margin: 0 0 0 35px; 
+	text-align: left;
+}
+@media (min-width: 768px) {
+	.topbar .top-navbar .navbar-nav>.nav-item>.nav-link {
+		padding-left: 1.25rem;
+	}
+	.topbar .navbar .navbar-header {
+		margin-left: 60px;
+	}
+}
+.container-fluid {
+    padding: 15px 30px;
+}
+p {
+	text-align: justify;
+}
+h1 {
+	font-size: 16px;
+	line-height: 24px; /* 34px; */
+}
+h3 {
+    font-size: 16px;
+    line-height: 24px;
+}
+h4 {
+    font-size: 16px;
+    line-height: 20px;
+}
+h5 {
+    font-size: 14px;
+    line-height: 16px;
+}
+.card-block {
+	padding: 15px;
+}
+.form-control {
+    font-size: 95%;
+	min-height: 0;
+    padding: .5rem;
+}
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9 {
+	padding: 0 10px;
+}
+.card {
+    margin-bottom: 20px;
+}
+.message-box .message-widget a {
+	padding: 0;
+}
+.message-box .message-widget a .user-img {
+	margin: 10px;
+}
+.btn {
+	font-size: 95%;
+}
+.table, ul.pagination {
+	margin-bottom: 0;
+}
+.table td, .table th {
+    padding: .5rem;
+}
+.notify .heartbit {
+    top: 0px;
+    right: 3px;
+    height: 50px;
+    width: 50px;
+}
+
+.text-info {
+	font-size: 15px;
+	line-height: 20px;
+}
+
+.context {
+	font-size: 12px;
+}
+</style></head>
+
+<body class="card-no-border logo-center">
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+	<svg class="circular" viewBox="25 25 50 50">
+		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10">
+	</svg>
+</div>    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper">
+		        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        <header class="topbar" style="z-index: 2000;">
+            <nav class="navbar top-navbar navbar-toggleable-sm navbar-light">
+                <!-- ============================================================== -->
+                <!-- Logo -->
+                <!-- ============================================================== -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="./">
+						<!-- Logo icon -->
+						<b>
+							<!-- dark -->
+							<img src="/public/images/logo-icon.png" alt="homepage" class="dark-logo">
+							<!-- light -->
+							<img src="/public/images/logo-light-icon.png" alt="homepage" class="light-logo"></b>
+                        <!-- Logo text -->
+						<span>
+							<!-- dark -->
+							<img src="/public/images/logo-text.png" alt="homepage" class="dark-logo">
+							<!-- ligth -->    
+							<img src="/public/images/logo-light-text.png" class="light-logo" alt="homepage"></span></a>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End Logo -->
+                <!-- ============================================================== -->
+                <div class="navbar-collapse">
+                    <!-- ============================================================== -->
+                    <!-- toggle and nav items -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav mr-auto mt-md-0 ">
+                        <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li> <!-- style="padding-left: .5rem;" -->
+				
+                        <li class="nav-item"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><!--<i class="icon-arrow-left-circle"></i>--><i class="ti-split-h"></i></a> </li>
+                        
+						<!-- ============================================================== -->
+                        <!-- Avisos -->
+                        <!-- ============================================================== -->
+						
+                        <!-- ============================================================== -->
+                        <!-- Mapa -->
+                        <!-- ============================================================== -->
+												
+                    </ul>
+					
+                    <!-- ============================================================== -->
+                    <!-- Buscar y enlace a M.A.P.A.M.A. -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav my-lg-0">
+						<li class="nav-item">
+							<div style="margin-top: 14px;">
+								<img usemap="#logochd" style="width:223; height:40" src="/public/images/ministerio_chd-web_223x40.png" alt="CONFEDERACIÓN HIDROGRÁFICA DEL DUERO, O.A.">
+								<map name="logochd">
+								  <area shape="rect" coords="0,0,89,39" target="_blank" href="http://administracion.gob.es" title="administracion.gov.es - punto de acceso general" alt="administracion.gov.es - punto de acceso general">
+								  <area shape="rect" coords="90,0,182,39" target="_blank" href="https://www.miteco.gob.es" title="MINISTERIO PARA LA TRANSICIÓN ECOLÓGICA Y EL RETO DEMOGRÁFICO" alt="MINISTERIO PARA LA TRANSICIÓN ECOLÓGICA Y EL RETO DEMOGRÁFICO">
+								  <area shape="rect" coords="183,0,222,39" href="http://www.chduero.es/" title="CONFEDERACIÓN HIDROGRÁFICA DEL DUERO, O.A." alt="CONFEDERACIÓN HIDROGRÁFICA DEL DUERO, O.A.">
+								</map>								
+							</div>
+						</li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+        <!-- ============================================================== -->
+				        <!-- ============================================================== -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <aside class="left-sidebar" style="z-index: 750;">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li>
+                            <a href="./" aria-expanded="false"><i class="mdi mdi-home"></i><span class="hide-menu">Inicio</span></a>
+                        </li>
+						
+                        <li>
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-information-outline"></i><span class="hide-menu">Descripción del sistema</span></a>
+                            <ul aria-expanded="false" class="collapse">
+								<li><a href="descripcion-sistema">Presentación</a></li>
+                                <li>
+                                    <a class="has-arrow" href="#" aria-expanded="false">Red Integrada SAIH-ROEA</a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="descripcion-risr">Descripción</a></li>
+										<li><a href="descripcion-puntos-risr">Puntos de control</a></li>
+                                        <li><a href="descripcion-instrumentacion-risr">Instrumentación</a></li>
+                                    </ul>
+                                </li>								
+								<li>
+									<a class="has-arrow" href="#" aria-expanded="false">Sistema SAICA</a>
+									<ul aria-expanded="false" class="collapse">
+										<li><a href="descripcion-saica">Descripción</a></li>
+										<li><a href="descripcion-puntos-saica">Puntos de control</a></li>
+                                        <li><a href="descripcion-instrumentacion-saica">Instrumentación</a></li>
+                                    </ul>
+                                </li>								
+								<li><a href="descripcion-comunicaciones">Comunicaciones</a></li>
+								<li><a href="descripcion-explotacion">Explotación y Mantenimiento</a></li>
+                            </ul>
+                        </li>
+                        
+						<li>
+                            <a href="datos-tiempo-real"><i class="mdi mdi-timetable"></i><span class="hide-menu">Datos en tiempo real</span></a>
+                        </li>
+						
+												
+						<li>
+                            <a href="situacion-embalses"><i class="mdi mdi-table-large"></i><span class="hide-menu">Situación de los embalses</span></a>
+                        </li>						
+						
+                        						
+                        <li>
+                            <a href="galeria"><i class="mdi mdi-camera"></i><span class="hide-menu">Galería de imágenes</span></a>
+                        </li>
+						
+						<!--<li class="nav-devider"></li>
+                        <li>
+                            <a href="#" data-toggle="modal" data-target=".bs-modal-lg-aviso"><i class="mdi mdi-alert-circle"></i><span class="hide-menu">Importante</span></a>
+                        </li>-->
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+			<!--<div class="sidebar-footer">
+                <a class="link" data-toggle="modal" data-target=".bs-modal-lg-aviso" href="#" style=" color: #263238; float: none;"><i class="mdi mdi-alert-circle"></i> Importante</a>
+			</div>-->
+        </aside>
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+				<div class="row page-titles">
+	<div class="col-md-10 col-11 align-self-center">
+		<h3 class="text-themecolor m-b-0 m-t-0">Duero en Aranda de Duero</h3>
+				<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="./">Inicio</a></li>
+								<li class="breadcrumb-item"><a href="datos-tiempo-real">Datos en tiempo real</a></li>
+								<li class="breadcrumb-item"><a href="datos-tiempo-real/risr">Información Hidrológica y Meteorológica</a></li>
+								<li class="breadcrumb-item active">Duero en Aranda de Duero</li>
+		</ol>
+								
+	</div>
+		<div class="col-md-2 col-1 align-self-center">
+		<a class="btn btn-info btn-sm pull-right" href="#" id="linkBack"><i class="mdi mdi-arrow-left-bold-circle"></i> Volver</a>
+		<!-- m-l-10 right-side-toggle waves-effect waves-light -->
+	</div>
+    <script>
+        $(function() {
+           $('#linkBack').click(function(e) {
+              console.log('vuelvo');
+              e.preventDefault();
+              e.stopPropagarion;
+              history.back();
+           });
+        });
+    </script>
+	</div>
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+				<div class="row">
+                    <div class="col-12">
+                        <div class="card">
+							<!-- Bloque  -->
+                            <div class="card-block">
+								<h4 class="card-title"><i class="mdi mdi-map-marker"></i> Datos geográficos</h4>
+								<div class="row">
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>Cauce</strong>
+										<br>
+										<p class="text-muted">Duero</p>
+									</div>
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>Municipio</strong>
+										<br>
+										<p class="text-muted">Aranda de Duero</p>
+									</div>
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>Provincia</strong>
+										<br>
+										<p class="text-muted">Burgos</p>
+									</div>
+								</div>
+																<div class="row">	
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>Coordenadas UTM</strong>
+										<br>
+										<p class="text-muted">Huso 30</p>
+									</div>
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>X</strong>
+										<br>
+										<p class="text-muted">443.331</p>
+									</div>
+									<div class="col-md-3 col-xs-6 b-r">
+										<strong>Y</strong>
+										<br>
+										<p class="text-muted">4.611.587</p>
+									</div>
+																		<div class="col-md-3 col-xs-6 b-r">
+										<strong>Z</strong>
+										<br>
+										<p class="text-muted">790</p>
+									</div>
+																	</div>
+																	<!--<div class="row">
+									<div class="col-12">
+										<div class="map-box">
+											<iframe allowfullscreen frameborder="0" height="150" marginheight="0" marginwidth="0" scrolling="no" src="" style="border:0" width="100%"></iframe>
+										</div>
+									</div>
+								</div>-->
+															</div>
+						</div>
+
+												
+                        <div class="card">							
+							<div class="card-block">
+								<h4 class="card-title"><i class="mdi mdi-tag-text-outline"></i> Datos de la estación</h4>
+																<div class="row">
+																			<div class="col-md-3 col-xs-6 b-r">
+										<strong>Tipo de aforo</strong>
+										<br>
+										<p class="text-muted">---</p>
+									</div>
+																		<div class="col-md-3 col-xs-6 b-r">
+										<strong>Instrumentación</strong>
+										<br>
+										<p class="text-muted">Sonda</p>
+									</div>
+																		<div class="col-md-3 col-xs-6 b-r">
+										<strong>Cuenca vertiente</strong>
+										<br>
+										<p class="text-muted">7.456,70 <span class="text-muted">km2</span></p>
+									</div>
+																	</div>
+										                         </div>								
+                        </div>
+													
+                        <div class="card">
+                            <div class="card-block">
+								<h4 class="card-title"><i class="mdi mdi-timetable"></i> Datos en tiempo real</h4>
+								                                <h6 class="card-subtitle">Última actualización: </h6>
+								<div class="table-responsive">
+									<table class="table table-bordered table-hover toggle-circle" data-toggle="table" data-mobile-responsive="true">
+										<thead>
+											<tr>
+												<th data-toggle="true">Variable</th>
+												<th>Valor</th>
+												<th data-hide="phone">Fecha</th>
+												<th><span class="hidden-sm-down">Tendencia</span><span class="hidden-md-up">Tend.</span></th>
+												<th><span class="hidden-sm-down">Histórico</span><span class="hidden-md-up">Hist.</span></th>
+											</tr>
+										</thead>
+										<tbody>
+																							<tr>
+													<td>Nivel</td>
+													<td class="variable">n/d</td>
+													<td><span class="hidden-sm-down"></span><span class="hidden-md-up"></span></td>
+													<td><i class="wi wi-direction-right" style="font-size: 110%;"></i></td>
+													<td><a class="mdi mdi-chart-histogram" href="risr/EA013/historico/xATSOFURfNTMwEUR"/></td>
+												</tr>
+																								<tr>
+													<td>Caudal</td>
+													<td class="variable">n/d</td>
+													<td><span class="hidden-sm-down"></span><span class="hidden-md-up"></span></td>
+													<td><i class="wi wi-direction-right" style="font-size: 110%;"></i></td>
+													<td><a class="mdi mdi-chart-histogram" href="risr/EA013/historico/xATVRFURfNTMwEUR"/></td>
+												</tr>
+																						</tbody>
+									</table>
+								</div>
+                            </div>
+                        </div>
+
+												
+                        <div class="card">
+                            <div class="card-block">
+								<h4 class="card-title"><i class="mdi mdi-calendar-multiple"></i> Datos estadísticos</h4>
+																<div class="table-responsive m-b-10">
+								<table class="table table-bordered table-hover toggle-circle" data-toggle="table" data-mobile-responsive="true">
+									<thead>
+                                        <tr>
+                                            <th data-toggle="true">Variable</th>
+                                            <th>Ayer</th>
+                                            <th>Mín. mes</th>
+                                            <th>Máx. mes</th>
+                                            <th data-hide="phone">Mín. año</th>
+                                            <th data-hide="phone">Máx. año</th>											
+                                        </tr>										
+                                    </thead>
+									<tbody>
+																						<tr>
+												    <td>Nivel</td>
+												    <td class="variable">6,93 <span class="text-muted">m</span></td>
+												    <td class="variable">2,15 <span class="text-muted">m</span></td>
+												    <td class="variable">8,87 <span class="text-muted">m</span></td>
+												    <td class="variable">0,91 <span class="text-muted">m</span></td>
+												    <td class="variable">8,87 <span class="text-muted">m</span></td>
+												</tr>
+																								<tr>
+												    <td>Caudal</td>
+												    <td class="variable">311,16 <span class="text-muted">m3/s</span></td>
+												    <td class="variable">52,47 <span class="text-muted">m3/s</span></td>
+												    <td class="variable">416,12 <span class="text-muted">m3/s</span></td>
+												    <td class="variable">2,36 <span class="text-muted">m3/s</span></td>
+												    <td class="variable">416,12 <span class="text-muted">m3/s</span></td>
+												</tr>
+														
+                                    </tbody>
+								</table>
+								</div>
+									                            </div>
+                        </div>
+							
+												
+						<div class="card">
+    <div class="card-block">
+        <!--<div class="ribbon ribbon-bookmark ribbon-info ribbon-right">Novedad</div>-->
+        <h4 class="card-title"><i class="mdi mdi-file-multiple"></i> Datos históricos</h4>
+        <div class="row">
+                        <div class="col-6 b-r">
+                <strong>Datos medios horarios de los últimos años hidrológicos. SUJETOS A REVISIÓN.</strong>
+                <br>
+                <form action="historico-risr-csv">
+                <!--<p class="text-muted">-->
+                <label class="text-muted" style="margin-bottom: 0;">Año Hidrológico</label>
+                <select name="f">
+                                        <option value="2013_AH2022_HQ.csv">2022-2023</option>
+                                                <option value="2013_AH2021_HQ.csv">2021-2022</option>
+                                                <option value="2013_AH2020_HQ.csv">2020-2021</option>
+                                            </select>
+                <button type="submit" class="btn btn-info btn-sm" style="margin: 5px 0;"><i class="mdi mdi-download"></i> Descargar</button> <span>(fichero .CSV)</span>
+                <!--</p>-->
+                </form>
+            </div>
+            <div class="col-6">
+                <strong>El resto de los datos se pueden obtener del siguiente enlace:</strong>
+                <div class="message-box">
+                    <div class="message-widget">
+                        <a href="https://sig.mapama.gob.es/redes-seguimiento" target="_blank">
+                            <div class="user-img"><img src="/public/images/logo_redesseguimiento.png"></div>
+                            <div class="mail-contnet">
+                                <h5>ANUARIO OFICIAL DE AFOROS</h5>
+                                <!--<span class="mail-desc">Con información ya validada/revisada</span>-->
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+                        </div>
+    </div>
+</div>						
+						<div class="card">
+	<div class="card-block">
+		<h4 class="card-title"><i class="mdi mdi-camera"></i> Galería de imágenes</h4>
+		<!--<h6 class="card-subtitle">Descripción</h6>-->
+		<div class="row zoom-gallery"> <!-- m-t-30 -->
+						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 m-b-10">
+				<a href="/public/galeria/EA013/general/EA013_1.jpg" title="Duero en Aranda de Duero"><img src="/public/galeria/EA013/general/EA013_1.jpg" class="img-responsive" alt="EA013_1.jpg"></a>
+			</div>
+									<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 m-b-10">
+				<a href="/public/galeria/EA013/general/EA013_2.jpg" title="Duero en Aranda de Duero"><img src="/public/galeria/EA013/general/EA013_2.jpg" class="img-responsive" alt="EA013_2.jpg"></a>
+			</div>
+									<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 m-b-10">
+				<a href="/public/galeria/EA013/general/EA013_3.jpg" title="Duero en Aranda de Duero"><img src="/public/galeria/EA013/general/EA013_3.jpg" class="img-responsive" alt="EA013_3.jpg"></a>
+			</div>
+									<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 m-b-10">
+				<a href="/public/galeria/EA013/scheme/EA013_1.jpg" title="Duero en Aranda de Duero"><img src="/public/galeria/EA013/scheme/EA013_1.jpg" class="img-responsive" alt="EA013_1.jpg"></a>
+			</div>
+								</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	$('.zoom-gallery').magnificPopup({
+		delegate: 'a',
+		type: 'image',
+		closeOnContentClick: false,
+		closeBtnInside: false,
+		mainClass: 'mfp-with-zoom mfp-img-mobile',
+		image: {
+			verticalFit: true,
+			titleSrc: function(item) {
+				return item.el.attr('title');
+			}
+		},
+		gallery: {
+			enabled: true,
+			tCounter: '<span class="mfp-counter">%curr% de %total%</span>',
+			tNext: 'Siguiente (Tecla: Flecha Derecha)',
+			tPrev: 'Anterior (Tecla: Flecha Izquierda)'			
+		},
+		zoom: {
+			enabled: true,
+			duration: 300, // don't foget to change the duration also in CSS
+			opener: function(element) {
+				return element.find('img');
+			}
+		}
+	});
+});
+</script>
+								
+						<div class="card ribbon-wrapper">
+	<div class="ribbon ribbon-default">Importante</div>
+	<div class="card-block p-0">
+		<p>Los datos son provisionales y están sujetos a revisión.</p>
+		<div class="pull-right"><a href="#" data-toggle="modal" data-target=".bs-modal-lg-aviso">Leer más ...</a></div>
+	</div>
+</div>
+                    </div>
+                </div>					
+                <!-- ============================================================== -->
+                <!-- End Page Content -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+			            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <footer class="footer">
+                © 2026 saihduero.es <div class="pull-right"><a href="#" data-toggle="modal" data-target=".bs-modal-lg-aviso"><i class="mdi mdi-alert-circle"></i> Importante</a></div>
+				<div class="modal fade bs-modal-lg-aviso" tabindex="-1" role="dialog" aria-labelledby="largeModalAvisoDatosProvisionales" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="largeModalAvisoDatosProvisionales">Aviso sobre la provisionalidad de los datos en tiempo real</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <p>La red de aforos, meteorológica y la red de información automática de calidad de las aguas (SAICA) son redes de telecontrol en tiempo real. Los datos recopilados por los sensores en los puntos de control son transmitidos de forma automática al Centro de Control de cuenca mediante comunicaciones VSAT y/o 4G/3G/GPRS/GSM.</p>
+
+                <p>En este sentido, debido a las extremas condiciones ambientales, climatológicas e hidrológicas a las que se ven expuestos los equipos de medición, es posible que puedan producirse imprecisiones en el dato registrado en tiempo real por dichos equipos debido, entre otras, a las siguientes circunstancias:
+                <ul>
+                    <li>Formación de placas de hielo.
+                    <li>Embalsamiento natural del agua debido a troncos y/o follaje.</li>
+                    <li>Crecimiento de vegetación en el lecho y/o paramentos de la sección de control.</li>
+                    <li>Sedimentos depositados en la sección de control o que estén en movimiento.</li>
+                    <li>Malfuncionamiento de los equipos de registro.</li>
+                    <li>Interrupción del suministro eléctrico al punto de control o agotamiento de las baterías.</li>
+                    <li>Condiciones meteorológicas adversas (rayos, nieve, etc.).</li>
+                    <li>Problemas relacionados con la comunicación del dato.</li>
+                </ul></p>
+
+                <p>Por otro lado, la alta frecuencia y gran volumen de transmisión de datos aporta a éstos un carácter de provisionalidad hasta su posterior revisión, validación y consolidación en firme por parte de los Servicios SAIH y de Aforos y Estadísticas de la Confederación Hidrográfica del Duero, O.A.</p>
+
+                <p>En consecuencia, los datos publicados en tiempo real, aun siendo datos de naturaleza oficial, <strong>tienen un carácter provisional y pueden estar sujetos a revisión o posterior modificación</strong> a fin de asegurar su exactitud y validez.</p>
+
+                <p>Los datos meteorológicos recopilados en tiempo real (temperatura, pluviometría, etc.) tienen su propósito en el ámbito de las competencias atribuidas a la Confederación Hidrográfica del Duero, no realizando este Organismo de cuenca labores de validación posterior sobre los mismos. En este sentido, para la elaboración de documentos técnicos, análisis, o estudios de cualquier índole, los datos meteorológicos válidos serán los ofrecidos por la Agencia Estatal de Meteorología (AEMET), dado que es el organismo competente en dicha materia y al que se deben dirigir para la obtención de datos históricos.</p>
+
+                <p>Finalmente, los usuarios de los datos en tiempo real son advertidos del carácter provisional de la información antes de usarla para la toma de decisiones que conciernen a seguridad personal, pública o aplicada a un negocio que suponga consecuencias económicas u operacionales substanciales.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info waves-effect text-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>            </footer>
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <script>
+    $(document).ready(function() {
+        activateSidebarLink('datos-tiempo-real');
+    });
+    </script>    
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+{
+  "name": "chd-api",
+  "version": "1.0.0",
+  "description": "Confederacion Hidrográfica del Duero - API",
+  "keywords": [
+    "chd",
+    "duero",
+    "rios",
+    "api"
+  ],
+  "homepage": "https://github.com/arandadeduero/chd-api#readme",
+  "bugs": {
+    "url": "https://github.com/arandadeduero/chd-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arandadeduero/chd-api.git"
+  },
+  "license": "ISC",
+  "author": "Guillermo Lopez <glopez@arandadeduero.es>",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "c8 ava"
+  },
+  "dependencies": {
+    "axios": "^1.13.5",
+    "cheerio": "^1.2.0",
+    "dayjs": "^1.11.19",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "ava": "^6.4.1",
+    "c8": "^10.1.3",
+    "eslint": "^10.0.0",
+    "eslint-plugin-ava": "^16.0.0",
+    "globals": "^17.3.0",
+    "nodemon": "^3.1.11",
+    "sinon": "^21.0.1"
+  }
+}
