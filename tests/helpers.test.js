@@ -4,10 +4,10 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import sinon from 'sinon';
 import axios from 'axios';
-import { 
-    parseStationsHTML, 
-    parseStationDetailHTML, 
-    parseStationAforoTypeHTML, 
+import {
+    parseStationsHTML,
+    parseStationDetailHTML,
+    parseStationAforoTypeHTML,
     getAllStationsAforo,
     getStationDetail,
     getStationAforoType
@@ -28,6 +28,11 @@ const stationDetailHTML = readFileSync(
 
 const stationAforoNivelHTML = readFileSync(
     join(__dirname, 'fixtures', 'risr-estacion-aranda-nivel.html'),
+    'utf-8'
+);
+
+const stationAforoCaudalHTML = readFileSync(
+    join(__dirname, 'fixtures', 'risr-estacion-aranda-caudal.html'),
     'utf-8'
 );
 
@@ -150,6 +155,38 @@ test('parseStationAforoTypeHTML returns empty array for HTML without chartData',
     const result = parseStationAforoTypeHTML(invalidHTML);
 
     t.deepEqual(result, []);
+});
+
+test('parseStationAforoTypeHTML extracts chartData from caudal', (t) => {
+    const result = parseStationAforoTypeHTML(stationAforoCaudalHTML);
+
+    // Should return an array
+    t.true(Array.isArray(result));
+    t.true(result.length > 0);
+
+    // Check structure of data points
+    const firstPoint = result[0];
+    t.true('d' in firstPoint);
+    t.true('v' in firstPoint);
+    t.true('@timestamp' in firstPoint);
+});
+
+test('parseStationAforoTypeHTML returns correct data format for caudal', (t) => {
+    const result = parseStationAforoTypeHTML(stationAforoCaudalHTML);
+
+    // Check first data point
+    t.is(result[0].d, '21/11/2025 00:00');
+    t.is(result[0].v, 10.51);
+    // November 21, 2025 00:00 in Madrid (CET = UTC+1) is November 20, 2025 23:00 UTC
+    t.is(result[0]['@timestamp'], '2025-11-20T23:00:00.000Z');
+
+    // Check that all entries have date, value, and timestamp
+    result.forEach((entry) => {
+        t.is(typeof entry.d, 'string');
+        t.is(typeof entry.v, 'number');
+        t.is(typeof entry['@timestamp'], 'string');
+        t.regex(entry['@timestamp'], /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    });
 });
 
 // Tests for async functions with mocked axios - Error cases (these properly test error handling)
