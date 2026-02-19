@@ -11,6 +11,7 @@ La API realiza web scraping del portal [saihduero.es](https://www.saihduero.es/)
 - Listado de estaciones de aforo
 - Detalles de cada estación
 - Datos históricos de mediciones (nivel, caudal, etc.)
+- Visualización gráfica de los datos con Chart.js
 
 Todas las fechas se convierten automáticamente desde la zona horaria Europe/Madrid a UTC.
 
@@ -20,6 +21,7 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - ✅ Sin límite de peticiones (rate limiting)
 - ✅ Conversión automática de zonas horarias (Europe/Madrid → UTC)
 - ✅ Extracción de datos desde HTML mediante web scraping
+- ✅ Visualización gráfica interactiva con Chart.js
 - ✅ Cobertura de tests del 85.57%
 - ✅ Tests automáticos con GitHub Actions (CI)
 
@@ -29,6 +31,8 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - **Cheerio** 1.2.0 - Parsing de HTML
 - **Axios** 1.13.5 - Cliente HTTP
 - **Day.js** 1.11.19 - Manejo de fechas y zonas horarias
+- **EJS** 4.0.1 - Motor de plantillas
+- **Chart.js** 4.4.1 - Visualización de gráficos con escala de tiempo
 - **Ava** 6.4.1 - Framework de testing
 - **c8** 10.1.3 - Cobertura de código
 
@@ -151,6 +155,37 @@ Devuelve los datos históricos de una medición específica para una estación.
 - `v` - Valor de la medición
 - `@timestamp` - Fecha y hora en formato ISO 8601 UTC
 
+### GET /station/aforo/:id/:type/graph
+
+Devuelve una visualización gráfica de los datos históricos usando Chart.js con escala de tiempo.
+
+**Parámetros:**
+
+- `id` - Identificador de la estación (ej: "EA013")
+- `type` - Tipo de medición (ej: "nivel", "caudal")
+
+**Respuesta:**
+
+Página HTML interactiva con:
+
+- 📈 Gráfico de líneas con escala de tiempo real
+- 📊 Estadísticas avanzadas:
+  - Total de mediciones, mínimo, máximo y promedio
+  - Percentil 5% (5% de valores más bajos)
+  - Diferencia con respecto al percentil 5% (en valor absoluto y porcentaje)
+- 📉 Línea de referencia visual del percentil 5% en el gráfico
+- 🎨 Diseño moderno con gradientes y animaciones
+- 👁️ Tooltips interactivos con información detallada
+- � Zoom y pan interactivo (rueda del ratón, botones o arrastrar)
+- �📱 Responsive y adaptable a móviles
+- 🔗 Enlaces para ver datos JSON y volver a la estación
+
+**Ejemplo de uso:**
+
+```
+http://localhost:3000/station/aforo/EA013/nivel/graph
+```
+
 ## Estructura del proyecto
 
 ```
@@ -158,6 +193,8 @@ chd-api/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml               # Tests automáticos en CI
+├── views/
+│   └── graph.ejs            # Plantilla EJS para visualización
 ├── index.js                      # Servidor Express y rutas
 ├── helpers.js                    # Funciones de parsing y fetching
 ├── tests/

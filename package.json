@@ -29,6 +29,7 @@
     "axios": "^1.13.5",
     "cheerio": "^1.2.0",
     "dayjs": "^1.11.19",
+    "ejs": "^4.0.1",
     "express": "^5.2.1"
   },
   "devDependencies": {
