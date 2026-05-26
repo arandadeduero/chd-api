@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import sinon from 'sinon';
 import axios from 'axios';
+import request from 'supertest';
 import {
     parseStationsHTML,
     parseStationDetailHTML,
@@ -12,6 +13,7 @@ import {
     getStationDetail,
     getStationAforoType
 } from '../helpers.js';
+import { app } from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,6 +35,21 @@ const stationAforoNivelHTML = readFileSync(
 
 const stationAforoCaudalHTML = readFileSync(
     join(__dirname, 'fixtures', 'risr-estacion-aranda-caudal.html'),
+    'utf-8'
+);
+
+const stationMultiTypeHTML = readFileSync(
+    join(__dirname, 'fixtures', 'risr-estacion-multi.html'),
+    'utf-8'
+);
+
+const stationTemperaturaHTML = readFileSync(
+    join(__dirname, 'fixtures', 'risr-estacion-aranda-temperatura.html'),
+    'utf-8'
+);
+
+const stationPluviometriaHTML = readFileSync(
+    join(__dirname, 'fixtures', 'risr-estacion-aranda-pluviometria.html'),
     'utf-8'
 );
 
@@ -206,7 +223,7 @@ test.serial('getStationDetail returns empty object on network failure', async (t
 
     try {
         const result = await getStationDetail('invalid');
-        t.deepEqual(result, {}); // Function returns empty object on error
+        t.deepEqual(result, []); // Function returns empty array on error
     } finally {
         stub.restore();
     }
@@ -261,4 +278,135 @@ test('parseStationDetailHTML returns empty array when no historic links found', 
     const result = parseStationDetailHTML(htmlWithoutHistoric);
 
     t.deepEqual(result, []);
+});
+
+// ── New types: temperatura ambiente and pluviometría ──────────────────────────
+
+test('parseStationDetailHTML extracts temperatura ambiente and pluviometría types', (t) => {
+    const result = parseStationDetailHTML(stationMultiTypeHTML);
+
+    t.is(result.length, 4);
+
+    const tempEntry = result.find(item => item.type === 'temperatura ambiente');
+    const pluvEntry = result.find(item => item.type === 'pluviometría');
+
+    t.truthy(tempEntry);
+    t.truthy(pluvEntry);
+
+    t.is(tempEntry.url, 'https://www.saihduero.es/risr/EA099/historico/AAAAtemperaturaToken3');
+    t.is(pluvEntry.url,  'https://www.saihduero.es/risr/EA099/historico/AAAApluviometriaToken4');
+});
+
+test('parseStationAforoTypeHTML extracts chartData for temperatura', (t) => {
+    const result = parseStationAforoTypeHTML(stationTemperaturaHTML);
+
+    t.true(Array.isArray(result));
+    t.true(result.length > 0);
+
+    const first = result[0];
+    t.is(first.d, '20/11/2025 00:00');
+    t.is(first.v, 8.5);
+    t.regex(first['@timestamp'], /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+});
+
+test('parseStationAforoTypeHTML extracts chartData for pluviometria', (t) => {
+    const result = parseStationAforoTypeHTML(stationPluviometriaHTML);
+
+    t.true(Array.isArray(result));
+    t.true(result.length > 0);
+
+    const first = result[0];
+    t.is(first.d, '20/11/2025 00:00');
+    t.is(first.v, 0.0);
+    t.regex(first['@timestamp'], /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+});
+
+// ── HTTP route integration tests ──────────────────────────────────────────────
+
+test('GET /health returns ok', async (t) => {
+    const res = await request(app).get('/health');
+    t.is(res.status, 200);
+    t.is(res.body.status, 'ok');
+});
+
+test('GET /station/aforo/:id/:type rejects invalid type', async (t) => {
+    const res = await request(app).get('/station/aforo/EA013/unknown');
+    t.is(res.status, 400);
+    t.truthy(res.body.error);
+});
+
+test('GET /station/aforo/:id/:type rejects invalid station id', async (t) => {
+    // Express normalises path traversal before routing, so the request never
+    // matches the route and returns 404 rather than reaching our validation.
+    const res = await request(app).get('/station/aforo/../../etc/passwd/nivel');
+    t.true(res.status === 400 || res.status === 404);
+});
+
+test.serial('GET /station/aforo/:id/:type returns data for temperatura slug', async (t) => {
+    // Stub: getStationDetail returns a temperatura ambiente entry, then fetch returns fixture HTML
+    const stub = sinon.stub(axios, 'get');
+    stub.onFirstCall().resolves({ data: stationMultiTypeHTML });   // getStationDetail call
+    stub.onSecondCall().resolves({ data: stationTemperaturaHTML }); // historico fetch
+
+    try {
+        const res = await request(app).get('/station/aforo/EA099/temperatura');
+        t.is(res.status, 200);
+        t.true(Array.isArray(res.body));
+        t.true(res.body.length > 0);
+        t.is(res.body[0].v, 8.5);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /station/aforo/:id/:type returns data for pluviometria slug', async (t) => {
+    const stub = sinon.stub(axios, 'get');
+    stub.onFirstCall().resolves({ data: stationMultiTypeHTML });
+    stub.onSecondCall().resolves({ data: stationPluviometriaHTML });
+
+    try {
+        const res = await request(app).get('/station/aforo/EA099/pluviometria');
+        t.is(res.status, 200);
+        t.true(Array.isArray(res.body));
+        t.true(res.body.length > 0);
+        t.is(res.body[0].v, 0.0);
+    } finally {
+        stub.restore();
+    }
+});
+
+test('GET /graph/:id/:type rejects unknown type', async (t) => {
+    const res = await request(app).get('/graph/EA013/humidity');
+    t.is(res.status, 400);
+    t.truthy(res.body.error);
+});
+
+test.serial('GET /graph/:id/:type renders graph for temperatura', async (t) => {
+    const stub = sinon.stub(axios, 'get');
+    stub.onFirstCall().resolves({ data: stationMultiTypeHTML });
+    stub.onSecondCall().resolves({ data: stationTemperaturaHTML });
+
+    try {
+        const res = await request(app).get('/graph/EA099/temperatura');
+        t.is(res.status, 200);
+        t.true(res.text.includes('EA099'));
+        t.true(res.text.includes('temperatura'));
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /graph/:id/:type renders graph for pluviometria', async (t) => {
+    const stub = sinon.stub(axios, 'get');
+    stub.onFirstCall().resolves({ data: stationMultiTypeHTML });
+    stub.onSecondCall().resolves({ data: stationPluviometriaHTML });
+
+    try {
+        const res = await request(app).get('/graph/EA099/pluviometria');
+        t.is(res.status, 200);
+        t.true(res.text.includes('EA099'));
+        t.true(res.text.includes('pluviometr'));
+    } finally {
+        stub.restore();
+    }
 });

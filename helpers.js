@@ -124,8 +124,10 @@ export function parseStationAforoTypeHTML(html) {
 
                 if (match && match[1]) {
                     try {
-                        // Use Function constructor to safely evaluate the JavaScript array
-                        const chartData = new Function('return ' + match[1])();
+                        // Convert JS object literal syntax to valid JSON (quote unquoted keys)
+                        const jsonString = match[1]
+                            .replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3');
+                        const chartData = JSON.parse(jsonString);
 
                         // Add @timestamp field to each data point
                         const enrichedData = chartData.map(item => {
@@ -178,7 +180,7 @@ export async function getStationDetail(stationId) {
         return parseStationDetailHTML(html);
     } catch (error) {
         console.error('Error fetching station detail:', error.message);
-        return {};
+        return [];
     }
 }
 

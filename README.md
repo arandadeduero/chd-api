@@ -10,31 +10,33 @@ La API realiza web scraping del portal [saihduero.es](https://www.saihduero.es/)
 
 - Listado de estaciones de aforo
 - Detalles de cada estación
-- Datos históricos de mediciones (nivel, caudal, etc.)
+- Datos históricos de mediciones (nivel, caudal)
 - Visualización gráfica de los datos con Chart.js
 
 Todas las fechas se convierten automáticamente desde la zona horaria Europe/Madrid a UTC.
 
 ## Características
 
-- ✅ API REST sin autenticación
-- ✅ Sin límite de peticiones (rate limiting)
-- ✅ Conversión automática de zonas horarias (Europe/Madrid → UTC)
-- ✅ Extracción de datos desde HTML mediante web scraping
-- ✅ Visualización gráfica interactiva con Chart.js
-- ✅ Cobertura de tests del 85.57%
-- ✅ Tests automáticos con GitHub Actions (CI)
+- API REST sin autenticación
+- Sin límite de peticiones (rate limiting)
+- Caché en memoria con TTL de 5 minutos
+- Validación de parámetros de entrada
+- Conversión automática de zonas horarias (Europe/Madrid → UTC)
+- Extracción de datos desde HTML mediante web scraping
+- Visualización gráfica interactiva con Chart.js
+- Cobertura de tests superior al 85%
+- Tests automáticos con GitHub Actions (CI)
 
 ## Tecnologías
 
-- **Express** 5.2.1 - Framework web
-- **Cheerio** 1.2.0 - Parsing de HTML
-- **Axios** 1.13.5 - Cliente HTTP
-- **Day.js** 1.11.19 - Manejo de fechas y zonas horarias
-- **EJS** 4.0.1 - Motor de plantillas
-- **Chart.js** 4.4.1 - Visualización de gráficos con escala de tiempo
-- **Ava** 6.4.1 - Framework de testing
-- **c8** 10.1.3 - Cobertura de código
+- **Express** 5.x - Framework web
+- **Cheerio** 1.x - Parsing de HTML
+- **Axios** 1.x - Cliente HTTP
+- **Day.js** 1.x - Manejo de fechas y zonas horarias
+- **EJS** 5.x - Motor de plantillas
+- **Chart.js** 4.x - Visualización de gráficos con escala de tiempo
+- **Ava** 8.x - Framework de testing
+- **c8** 11.x - Cobertura de código
 
 ## Instalación
 
@@ -50,7 +52,7 @@ npm install
 npm start
 ```
 
-El servidor se ejecuta en `http://localhost:3000`
+El servidor se ejecuta en `http://localhost:3000` por defecto. Se puede cambiar el puerto mediante la variable de entorno `PORT`.
 
 ### Modo desarrollo (con hot reload)
 
@@ -70,14 +72,29 @@ Los tests incluyen cobertura de código y fixtures para validar el parsing de HT
 
 El proyecto utiliza GitHub Actions para ejecutar tests automáticamente:
 
-- ✅ En cada push a las ramas `main`, `master` o `develop`
-- ✅ En cada Pull Request hacia estas ramas
-- ✅ Tests en múltiples versiones de Node.js (22.x, 24.x y latest)
-- ✅ Generación de reportes de cobertura
+- En cada push a las ramas `main`, `master` o `develop`
+- En cada Pull Request hacia estas ramas
+- Tests en múltiples versiones de Node.js (22.x, 24.x y latest)
+- Generación de reportes de cobertura
 
-El workflow de CI se encuentra en `.github/workflows/ci.yml`
+El workflow de CI se encuentra en `.github/workflows/ci.yml`.
 
 ## Endpoints
+
+### GET /health
+
+Devuelve el estado del servidor y el tiempo de actividad.
+
+**Respuesta:**
+
+```json
+{
+  "status": "ok",
+  "uptime": 123.456
+}
+```
+
+---
 
 ### GET /station/aforo/all
 
@@ -100,13 +117,15 @@ Devuelve todas las estaciones de tipo "Aforo" disponibles.
 ]
 ```
 
+---
+
 ### GET /station/aforo/:id
 
 Devuelve los tipos de medición disponibles para una estación específica.
 
 **Parámetros:**
 
-- `id` - Identificador de la estación (ej: "EA013")
+- `id` - Identificador de la estación (ej: `EA013`). Debe contener solo caracteres alfanuméricos, guiones o guiones bajos (máximo 20 caracteres).
 
 **Respuesta:**
 
@@ -123,14 +142,16 @@ Devuelve los tipos de medición disponibles para una estación específica.
 ]
 ```
 
+---
+
 ### GET /station/aforo/:id/:type
 
 Devuelve los datos históricos de una medición específica para una estación.
 
 **Parámetros:**
 
-- `id` - Identificador de la estación (ej: "EA013")
-- `type` - Tipo de medición (ej: "nivel", "caudal")
+- `id` - Identificador de la estación (ej: `EA013`)
+- `type` - Tipo de medición. Valores permitidos: `nivel`, `caudal`
 
 **Respuesta:**
 
@@ -155,36 +176,38 @@ Devuelve los datos históricos de una medición específica para una estación.
 - `v` - Valor de la medición
 - `@timestamp` - Fecha y hora en formato ISO 8601 UTC
 
+---
+
 ### GET /station/aforo/:id/:type/graph
 
 Devuelve una visualización gráfica de los datos históricos usando Chart.js con escala de tiempo.
 
 **Parámetros:**
 
-- `id` - Identificador de la estación (ej: "EA013")
-- `type` - Tipo de medición (ej: "nivel", "caudal")
+- `id` - Identificador de la estación (ej: `EA013`)
+- `type` - Tipo de medición: `nivel` o `caudal`
 
 **Respuesta:**
 
 Página HTML interactiva con:
 
-- 📈 Gráfico de líneas con escala de tiempo real
-- 📊 Estadísticas avanzadas:
-  - Total de mediciones, mínimo, máximo y promedio
-  - Percentil 5% (5% de valores más bajos)
-  - Diferencia con respecto al percentil 5% (en valor absoluto y porcentaje)
-- 📉 Línea de referencia visual del percentil 5% en el gráfico
-- 🎨 Diseño moderno con gradientes y animaciones
-- 👁️ Tooltips interactivos con información detallada
-- � Zoom y pan interactivo (rueda del ratón, botones o arrastrar)
-- �📱 Responsive y adaptable a móviles
-- 🔗 Enlaces para ver datos JSON y volver a la estación
+- Gráfico de líneas con escala de tiempo real
+- Estadísticas: total de mediciones, mínimo, máximo, promedio y percentil 5%
+- Línea de referencia visual del percentil 5% en el gráfico
+- Diseño responsive con gradientes y animaciones
+- Tooltips interactivos con información detallada
+- Zoom y pan interactivo (rueda del ratón, botones o arrastrar)
+- Enlaces para ver los datos en JSON y volver a la estación
 
-**Ejemplo de uso:**
+**Ejemplo:**
 
 ```
 http://localhost:3000/station/aforo/EA013/nivel/graph
 ```
+
+## Caché
+
+La API utiliza una caché en memoria con un TTL de **5 minutos**. Las respuestas de los tres endpoints de datos se cachean para reducir la carga sobre el portal SAIH Duero. La caché se comparte entre los endpoints `/station/aforo/:id/:type` y su variante `/graph`.
 
 ## Estructura del proyecto
 
@@ -194,9 +217,9 @@ chd-api/
 │   └── workflows/
 │       └── ci.yml               # Tests automáticos en CI
 ├── views/
-│   └── graph.ejs            # Plantilla EJS para visualización
-├── index.js                      # Servidor Express y rutas
-├── helpers.js                    # Funciones de parsing y fetching
+│   └── graph.ejs                # Plantilla EJS para visualización
+├── index.js                     # Servidor Express y rutas
+├── helpers.js                   # Funciones de parsing y fetching
 ├── tests/
 │   ├── helpers.test.js          # Suite de tests
 │   └── fixtures/                # HTML de ejemplo para tests
@@ -208,7 +231,7 @@ chd-api/
 └── README.md
 ```
 
-## Funciones principales
+## Funciones principales (helpers.js)
 
 ### `parseStationsHTML(html)`
 
