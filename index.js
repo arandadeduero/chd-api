@@ -252,14 +252,16 @@ app.get('/station/aforo/:id/:type/graph', async (req, res, next) => {
 
 // Error handler
 app.use((err, req, res, _next) => {
+    const context = `${req.method} ${req.originalUrl}`;
     if (err instanceof NotFoundError) {
+        console.warn(`Not found [${context}]:`, err.message);
         return res.status(404).json({ error: err.message });
     }
     if (err instanceof UpstreamTimeoutError) {
-        console.error('SAIH timeout:', err.message);
+        console.error(`SAIH timeout [${context}]:`, err.message);
         return res.status(500).json({ error: 'SAIH did not respond in time' });
     }
-    console.error('Unhandled error:', err.message);
+    console.error(`Unhandled error [${context}] [${err.code ?? err.name}]:`, err.stack || err.message);
     res.status(500).json({ error: 'Internal server error' });
 });
 

@@ -268,6 +268,37 @@ test.serial('GET /station/aforo/all returns 500 when SAIH times out', async (t) 
     }
 });
 
+test.serial('getAllStationsAforo throws UpstreamTimeoutError when the response stream is aborted mid-download', async (t) => {
+    // axios reports a timeout that fires after response headers were already
+    // received (SAIH slow to finish the body) as a stream abort rather than
+    // ECONNABORTED — see helpers.js isTimeoutError().
+    const streamAbortedError = new Error('stream has been aborted');
+    streamAbortedError.code = 'ERR_BAD_RESPONSE';
+    const stub = sinon.stub(axios, 'get').rejects(streamAbortedError);
+
+    try {
+        const err = await t.throwsAsync(() => getAllStationsAforo());
+        t.true(err instanceof UpstreamTimeoutError);
+        t.is(err.statusCode, 500);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /graph/:id returns 500 (not an unhandled 500) when the response stream is aborted mid-download', async (t) => {
+    const streamAbortedError = new Error('stream has been aborted');
+    streamAbortedError.code = 'ERR_BAD_RESPONSE';
+    const stub = sinon.stub(axios, 'get').rejects(streamAbortedError);
+
+    try {
+        const res = await request(app).get('/graph/EA153');
+        t.is(res.status, 500);
+        t.is(res.body.error, 'SAIH did not respond in time');
+    } finally {
+        stub.restore();
+    }
+});
+
 // ── Not found → 404 ──────────────────────────────────────────────────────────
 
 test.serial('getStationDetail throws NotFoundError when station has no historic links', async (t) => {

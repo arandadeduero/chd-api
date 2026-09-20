@@ -34,19 +34,29 @@ export class UpstreamTimeoutError extends Error {
 }
 
 function isTimeoutError(error) {
-    return error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+    if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        return true;
+    }
+    // When our timeout fires after response headers were already received
+    // (SAIH slow to finish sending the body), axios/follow-redirects abort
+    // the response stream instead of raising ECONNABORTED. Same root cause.
+    return error.code === 'ERR_BAD_RESPONSE' && error.message === 'stream has been aborted';
 }
 
 async function fetchSaih(url) {
+    const startedAt = Date.now();
     try {
         return await axios.get(url, { timeout: REQUEST_TIMEOUT_MS });
     } catch (error) {
+        const elapsedMs = Date.now() - startedAt;
         if (isTimeoutError(error)) {
+            console.error(`SAIH upstream timeout after ${elapsedMs}ms [${error.code}: ${error.message}]: ${url}`);
             throw new UpstreamTimeoutError(`SAIH did not respond within ${REQUEST_TIMEOUT_MS / 1000}s: ${url}`);
         }
         if (error.response?.status === 404) {
             throw new NotFoundError(`Not found upstream: ${url}`);
         }
+        console.error(`SAIH request failed after ${elapsedMs}ms [${error.code ?? error.name}: ${error.message}]: ${url}`);
         throw error;
     }
 }
