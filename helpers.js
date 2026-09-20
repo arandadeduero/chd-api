@@ -13,7 +13,7 @@ const puntosDeControlURL = 'https://www.saihduero.es/resultados-risr?q=&tipo=TT'
 const baseURL = 'https://www.saihduero.es/';
 
 // Max time to wait for a response from SAIH before giving up.
-const REQUEST_TIMEOUT_MS = 6000;
+const REQUEST_TIMEOUT_MS = 15000;
 
 // Thrown when a station or a measurement type/element doesn't exist upstream.
 export class NotFoundError extends Error {
