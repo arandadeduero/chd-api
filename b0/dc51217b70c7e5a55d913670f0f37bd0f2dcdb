@@ -1,0 +1,27 @@
+Dockerfile
+  s_ace75b123cb3fb::t_e77827f4fe85aa 1-25
+README.md
+  s_ace75b123cb3fb::t_b8cb90bd40eba9 63-80,100-102
+  s_ace75b123cb3fb::t_2bee2906fc4525 103
+.github/workflows/docker-publish.yml
+  s_ace75b123cb3fb::t_fe7e32ff904328 24
+  s_ace75b123cb3fb::t_bb7daea4a0cbdc 1-23,25-54
+.dockerignore
+  s_ace75b123cb3fb::t_644361f6a9bca3 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b0dc51217b70c7e5a55d913670f0f37bd0f2dcdb",
+  "prompts": {},
+  "sessions": {
+    "s_ace75b123cb3fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e82aec2c-3828-4f66-9d05-df9175e26dd5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": null
+    }
+  }
+}
