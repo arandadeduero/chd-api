@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
-COPY index.js helpers.js openapi.js ./
+COPY index.js helpers.js openapi.js logger.js ./
 COPY views ./views
 
 RUN addgroup -S app && adduser -S app -G app

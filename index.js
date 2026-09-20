@@ -1,7 +1,9 @@
 import express from 'express';
+import pinoHttp from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
 import { getAllStationsAforo, getStationDetail, getStationAforoType, NotFoundError, UpstreamTimeoutError } from './helpers.js';
 import { openapiSpec } from './openapi.js';
+import { logger } from './logger.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +16,21 @@ const PORT = process.env.PORT || 3000;
 // Set up EJS as template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// One line per request (method, url, status, response time) — level follows
+// the status code so a healthy /health poll doesn't drown out real problems.
+app.use(pinoHttp({
+    logger,
+    customLogLevel: (req, res, err) => {
+        if (err || res.statusCode >= 500) return 'error';
+        if (res.statusCode >= 400) return 'warn';
+        return 'info';
+    },
+    serializers: {
+        req: (req) => ({ method: req.method, url: req.url }),
+        res: (res) => ({ statusCode: res.statusCode }),
+    },
+}));
 
 // Middleware
 app.use(express.json());
@@ -252,16 +269,18 @@ app.get('/station/aforo/:id/:type/graph', async (req, res, next) => {
 
 // Error handler
 app.use((err, req, res, _next) => {
-    const context = `${req.method} ${req.originalUrl}`;
+    // req.log is a pino-http child logger already carrying the request id,
+    // so this correlates with the "request completed" line for the same call.
+    const log = req.log ?? logger;
     if (err instanceof NotFoundError) {
-        console.warn(`Not found [${context}]:`, err.message);
+        log.info({ err }, 'Not found');
         return res.status(404).json({ error: err.message });
     }
     if (err instanceof UpstreamTimeoutError) {
-        console.error(`SAIH timeout [${context}]:`, err.message);
+        log.warn({ err }, 'SAIH timeout');
         return res.status(500).json({ error: 'SAIH did not respond in time' });
     }
-    console.error(`Unhandled error [${context}] [${err.code ?? err.name}]:`, err.stack || err.message);
+    log.error({ err }, 'Unhandled error');
     res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -271,6 +290,6 @@ export { app, TYPE_SLUG_MAP };
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
     app.listen(PORT, () => {
-        console.log(`CHD API server running on http://localhost:${PORT}`);
+        logger.info({ port: PORT }, `CHD API server running on http://localhost:${PORT}`);
     });
 }

@@ -4,10 +4,14 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+import { logger } from './logger.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
+
+const saihLog = logger.child({ module: 'saih' });
+const parserLog = logger.child({ module: 'parser' });
 
 const puntosDeControlURL = 'https://www.saihduero.es/resultados-risr?q=&tipo=TT';
 const baseURL = 'https://www.saihduero.es/';
@@ -45,18 +49,24 @@ function isTimeoutError(error) {
 
 async function fetchSaih(url) {
     const startedAt = Date.now();
+    saihLog.debug({ url }, 'Requesting SAIH');
     try {
-        return await axios.get(url, { timeout: REQUEST_TIMEOUT_MS });
+        const response = await axios.get(url, { timeout: REQUEST_TIMEOUT_MS });
+        saihLog.info({ url, status: response.status, elapsedMs: Date.now() - startedAt }, 'SAIH responded');
+        return response;
     } catch (error) {
         const elapsedMs = Date.now() - startedAt;
         if (isTimeoutError(error)) {
-            console.error(`SAIH upstream timeout after ${elapsedMs}ms [${error.code}: ${error.message}]: ${url}`);
+            // SAIH is known to be flaky under load — treat as a recoverable,
+            // expected failure mode rather than a bug on our side.
+            saihLog.warn({ url, elapsedMs, code: error.code, message: error.message }, 'SAIH did not respond in time');
             throw new UpstreamTimeoutError(`SAIH did not respond within ${REQUEST_TIMEOUT_MS / 1000}s: ${url}`);
         }
         if (error.response?.status === 404) {
+            saihLog.debug({ url, status: 404 }, 'SAIH resource not found');
             throw new NotFoundError(`Not found upstream: ${url}`);
         }
-        console.error(`SAIH request failed after ${elapsedMs}ms [${error.code ?? error.name}: ${error.message}]: ${url}`);
+        saihLog.error({ url, elapsedMs, code: error.code ?? error.name, message: error.message }, 'SAIH request failed');
         throw error;
     }
 }
@@ -69,7 +79,7 @@ export function parseStationsHTML(html) {
         // Get the table
         const table = $('#table-estaciones-pagination');
         if (!table.length) {
-            console.warn('Table not found');
+            parserLog.warn('Stations table not found in SAIH HTML — page structure may have changed');
             return [];
         }
 
@@ -113,7 +123,7 @@ export function parseStationsHTML(html) {
 
         return rows;
     } catch (error) {
-        console.error('Error parsing HTML:', error.message);
+        parserLog.error({ err: error }, 'Error parsing stations HTML');
         return [];
     }
 }
@@ -150,7 +160,7 @@ export function parseStationDetailHTML(html) {
 
         return result;
     } catch (error) {
-        console.error('Error parsing station detail HTML:', error.message);
+        parserLog.error({ err: error }, 'Error parsing station detail HTML');
         return [];
     }
 }
@@ -191,7 +201,7 @@ export function parseStationAforoTypeHTML(html) {
 
                         return enrichedData;
                     } catch (parseError) {
-                        console.error('Error parsing chartData:', parseError.message);
+                        parserLog.error({ err: parseError }, 'Error parsing chartData');
                         return [];
                     }
                 }
@@ -200,7 +210,7 @@ export function parseStationAforoTypeHTML(html) {
 
         return [];
     } catch (error) {
-        console.error('Error parsing station aforo type HTML:', error.message);
+        parserLog.error({ err: error }, 'Error parsing station aforo type HTML');
         return [];
     }
 }
@@ -217,6 +227,7 @@ export async function getStationDetail(stationId) {
     const details = parseStationDetailHTML(response.data);
 
     if (details.length === 0) {
+        saihLog.debug({ url: stationURL, stationId }, 'SAIH responded but station has no historic links');
         throw new NotFoundError(`Station "${stationId}" not found`);
     }
 

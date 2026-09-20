@@ -38,6 +38,7 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - **EJS** 5.x - Motor de plantillas
 - **Chart.js** 4.x - Visualización de gráficos con escala de tiempo
 - **Swagger UI** 5.x - Documentación interactiva de la API (OpenAPI 3.0)
+- **Pino** 10.x - Logging estructurado (`pino-http` para las peticiones)
 - **Ava** 8.x - Framework de testing
 - **c8** 11.x - Cobertura de código
 
@@ -62,6 +63,15 @@ El servidor se ejecuta en `http://localhost:3000` por defecto. Se puede cambiar 
 ```bash
 npm run dev
 ```
+
+### Logging
+
+Los logs usan [pino](https://getpino.io/), con niveles `debug`, `info`, `warn` y `error`:
+
+- Cada petición a la API genera una línea (`method`, `url`, `status`, tiempo de respuesta).
+- Cada petición a SAIH genera una línea con la URL solicitada y, si responde, el status y el tiempo empleado; si falla (timeout, error de red, 404) se registra con el nivel adecuado.
+- En desarrollo (`NODE_ENV` distinto de `production`) el formato es texto coloreado y legible (vía `pino-pretty`); en producción es JSON estructurado, listo para agregadores de logs.
+- El nivel por defecto es `debug` en desarrollo e `info` en producción. Se puede forzar con la variable de entorno `LOG_LEVEL` (por ejemplo `LOG_LEVEL=debug` para ver el detalle de cada petición a SAIH sin cambiar código ni redeploy — útil porque SAIH no siempre responde de forma fiable).
 
 ### Docker
 
