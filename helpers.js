@@ -20,25 +20,19 @@ const baseURL = 'https://www.saihduero.es/';
 // extremely slow, hence the generous budget.
 const REQUEST_TIMEOUT_MS = 60000;
 
-// How long a station's detail page (list of measurement types + URLs) stays
-// cached. getStationAforoType() calls getStationDetail() internally, so
-// without this, querying two types for the same station (e.g. nivel then
-// caudal) would hit SAIH's slow /risr/<id> page twice.
-const STATION_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+// Station detail (list of measurement types + URLs) practically never
+// changes, so this cache never expires — only a process restart clears it.
+// getStationAforoType() calls getStationDetail() internally, so without
+// this, querying two types for the same station (e.g. nivel then caudal)
+// would hit SAIH's slow /risr/<id> page twice.
 const stationDetailCache = new Map();
 
 function getCachedStationDetail(stationId) {
-    const entry = stationDetailCache.get(stationId);
-    if (!entry) return null;
-    if (Date.now() - entry.ts > STATION_DETAIL_CACHE_TTL_MS) {
-        stationDetailCache.delete(stationId);
-        return null;
-    }
-    return entry.value;
+    return stationDetailCache.get(stationId) ?? null;
 }
 
 function setCachedStationDetail(stationId, details) {
-    stationDetailCache.set(stationId, { value: details, ts: Date.now() });
+    stationDetailCache.set(stationId, details);
 }
 
 // Exposed for tests only, so cached state from one test doesn't leak into
