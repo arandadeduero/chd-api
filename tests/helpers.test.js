@@ -407,6 +407,26 @@ test('GET /health returns ok', async (t) => {
     t.is(res.body.status, 'ok');
 });
 
+test('GET / renders the home page with links to the API docs and dashboards', async (t) => {
+    const res = await request(app).get('/');
+    t.is(res.status, 200);
+    t.regex(res.text, /\/api-docs/);
+    t.regex(res.text, /\/graph/);
+});
+
+test('GET /openapi.json returns the OpenAPI spec', async (t) => {
+    const res = await request(app).get('/openapi.json');
+    t.is(res.status, 200);
+    t.is(res.body.openapi, '3.0.3');
+    t.truthy(res.body.paths['/health']);
+});
+
+test('GET /api-docs serves the Swagger UI', async (t) => {
+    const res = await request(app).get('/api-docs/');
+    t.is(res.status, 200);
+    t.regex(res.text, /swagger-ui/);
+});
+
 test('GET /station/aforo/:id/:type rejects invalid type', async (t) => {
     const res = await request(app).get('/station/aforo/EA013/unknown');
     t.is(res.status, 400);

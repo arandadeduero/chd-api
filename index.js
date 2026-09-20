@@ -1,5 +1,7 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { getAllStationsAforo, getStationDetail, getStationAforoType, NotFoundError, UpstreamTimeoutError } from './helpers.js';
+import { openapiSpec } from './openapi.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -58,6 +60,26 @@ function resolveType(slug) {
 }
 
 // Routes
+
+app.get('/', (req, res) => {
+    res.render('home');
+});
+
+app.get('/openapi.json', (req, res) => {
+    res.json(openapiSpec);
+});
+
+const swaggerUiOptions = {
+    customSiteTitle: 'CHD API · Docs',
+    customCss: `
+        body { background: #0d1117; }
+        .swagger-ui { filter: invert(0.88) hue-rotate(180deg); }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui img,
+        .swagger-ui .microlight { filter: invert(1) hue-rotate(180deg); }
+    `,
+};
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, swaggerUiOptions));
 
 app.get('/graph', async (req, res, next) => {
     try {

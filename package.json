@@ -30,7 +30,8 @@
     "cheerio": "^1.2.0",
     "dayjs": "^1.11.23",
     "ejs": "^6.0.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "overrides": {
     "yargs": "^18.0.0"

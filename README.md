@@ -24,6 +24,8 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - Conversión automática de zonas horarias (Europe/Madrid → UTC)
 - Extracción de datos desde HTML mediante web scraping
 - Visualización gráfica interactiva con Chart.js
+- Página principal (`/`) con listado de APIs y dashboards disponibles
+- Documentación interactiva de la API con Swagger UI (`/api-docs`)
 - Cobertura de tests superior al 85%
 - Tests automáticos con GitHub Actions (CI)
 
@@ -35,6 +37,7 @@ Todas las fechas se convierten automáticamente desde la zona horaria Europe/Mad
 - **Day.js** 1.x - Manejo de fechas y zonas horarias
 - **EJS** 5.x - Motor de plantillas
 - **Chart.js** 4.x - Visualización de gráficos con escala de tiempo
+- **Swagger UI** 5.x - Documentación interactiva de la API (OpenAPI 3.0)
 - **Ava** 8.x - Framework de testing
 - **c8** 11.x - Cobertura de código
 
@@ -111,6 +114,20 @@ El workflow de CI se encuentra en `.github/workflows/ci.yml`.
 ### Publicación de la imagen Docker
 
 En cada push a `main` (y en cada tag `v*.*.*`), el workflow `.github/workflows/docker-publish.yml` construye la imagen y la publica en el GitHub Container Registry como [`ghcr.io/arandadeduero/chd-api`](https://github.com/arandadeduero/chd-api/pkgs/container/chd-api).
+
+## Página principal y documentación
+
+### GET /
+
+Página de inicio con el listado de APIs y dashboards disponibles (enlaces directos a cada endpoint y a Swagger UI).
+
+### GET /api-docs
+
+Documentación interactiva de la API generada con [Swagger UI](https://github.com/swagger-api/swagger-ui) a partir de la especificación OpenAPI 3.0 (`openapi.js`). Permite explorar cada endpoint, ver los esquemas de petición/respuesta y ejecutar peticiones reales ("Try it out") directamente desde el navegador.
+
+### GET /openapi.json
+
+Especificación OpenAPI 3.0 en formato JSON, útil para generar clientes o importarla en herramientas como Postman/Insomnia.
 
 ## Endpoints
 
