@@ -16,8 +16,36 @@ const parserLog = logger.child({ module: 'parser' });
 const puntosDeControlURL = 'https://www.saihduero.es/resultados-risr?q=&tipo=TT';
 const baseURL = 'https://www.saihduero.es/';
 
-// Max time to wait for a response from SAIH before giving up.
-const REQUEST_TIMEOUT_MS = 15000;
+// Max time to wait for a response from SAIH before giving up. SAIH can be
+// extremely slow, hence the generous budget.
+const REQUEST_TIMEOUT_MS = 60000;
+
+// How long a station's detail page (list of measurement types + URLs) stays
+// cached. getStationAforoType() calls getStationDetail() internally, so
+// without this, querying two types for the same station (e.g. nivel then
+// caudal) would hit SAIH's slow /risr/<id> page twice.
+const STATION_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const stationDetailCache = new Map();
+
+function getCachedStationDetail(stationId) {
+    const entry = stationDetailCache.get(stationId);
+    if (!entry) return null;
+    if (Date.now() - entry.ts > STATION_DETAIL_CACHE_TTL_MS) {
+        stationDetailCache.delete(stationId);
+        return null;
+    }
+    return entry.value;
+}
+
+function setCachedStationDetail(stationId, details) {
+    stationDetailCache.set(stationId, { value: details, ts: Date.now() });
+}
+
+// Exposed for tests only, so cached state from one test doesn't leak into
+// the next when they reuse the same station id.
+export function resetStationDetailCache() {
+    stationDetailCache.clear();
+}
 
 // Thrown when a station or a measurement type/element doesn't exist upstream.
 export class NotFoundError extends Error {
@@ -222,6 +250,12 @@ export async function getAllStationsAforo() {
 }
 
 export async function getStationDetail(stationId) {
+    const cached = getCachedStationDetail(stationId);
+    if (cached) {
+        saihLog.debug({ stationId }, 'Station detail cache hit');
+        return cached;
+    }
+
     const stationURL = `https://www.saihduero.es/risr/${stationId}`;
     const response = await fetchSaih(stationURL);
     const details = parseStationDetailHTML(response.data);
@@ -231,6 +265,7 @@ export async function getStationDetail(stationId) {
         throw new NotFoundError(`Station "${stationId}" not found`);
     }
 
+    setCachedStationDetail(stationId, details);
     return details;
 }
 

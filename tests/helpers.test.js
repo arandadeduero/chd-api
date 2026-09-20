@@ -12,6 +12,7 @@ import {
     getAllStationsAforo,
     getStationDetail,
     getStationAforoType,
+    resetStationDetailCache,
     NotFoundError,
     UpstreamTimeoutError
 } from '../helpers.js';
@@ -19,6 +20,13 @@ import { app } from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// getStationDetail() caches per station id; without this, tests that reuse
+// the same station id (e.g. EA099) with different stubbed responses would
+// see stale data left over from an earlier test.
+test.beforeEach(() => {
+    resetStationDetailCache();
+});
 
 const fixtureHTML = readFileSync(
     join(__dirname, 'fixtures', 'estaciones.html'),
@@ -344,6 +352,38 @@ test.serial('GET /station/aforo/:id/:type returns 404 when type not found for st
         const res = await request(app).get('/station/aforo/EA013/pluviometria');
         t.is(res.status, 404);
         t.truthy(res.body.error);
+    } finally {
+        stub.restore();
+    }
+});
+
+// ── Station detail caching ──────────────────────────────────────────────────
+
+test.serial('getStationDetail only fetches the station page once for repeated calls', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: stationDetailHTML });
+
+    try {
+        const first = await getStationDetail('EA013');
+        const second = await getStationDetail('EA013');
+        t.deepEqual(first, second);
+        t.is(stub.callCount, 1);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('getStationAforoType reuses the cached station detail across types', async (t) => {
+    const stub = sinon.stub(axios, 'get');
+    stub.onCall(0).resolves({ data: stationMultiTypeHTML });   // getStationDetail('EA099')
+    stub.onCall(1).resolves({ data: stationTemperaturaHTML }); // temperatura historico
+    stub.onCall(2).resolves({ data: stationPluviometriaHTML }); // pluviometria historico — no repeat detail fetch
+
+    try {
+        // getStationAforoType() expects the exact scraped type string (as
+        // resolved by index.js's TYPE_SLUG_MAP), not the URL slug.
+        await getStationAforoType('EA099', 'temperatura ambiente');
+        await getStationAforoType('EA099', 'pluviometría');
+        t.is(stub.callCount, 3);
     } finally {
         stub.restore();
     }
