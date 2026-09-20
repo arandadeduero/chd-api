@@ -1,0 +1,19 @@
+helpers.js
+  s_11f1cbac148922::t_d63a303c84fa4f 23-27,31,35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fe30619207989e27d29074763ec111e5a9c5c56b",
+  "prompts": {},
+  "sessions": {
+    "s_11f1cbac148922": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd539ec8-fe28-4898-9cc7-32fadf766f22",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
