@@ -1,0 +1,50 @@
+logger.js
+  s_11f1cbac148922::t_864113c7678f36 11-13
+  s_ace75b123cb3fb::t_a28e13b7ff8cf3 1-10,14-22
+README.md
+  s_11f1cbac148922::t_413cffa666afe9 41
+  s_11f1cbac148922::t_df7311218c586f 67-75
+index.js
+  s_11f1cbac148922::t_6421d416b9c2bb 2,6,20-33
+  s_11f1cbac148922::t_ed60371a399db9 272-274,276,280,283,293
+  s_11f1cbac148922::t_2aed735d915abc 34
+Dockerfile
+  s_11f1cbac148922::t_8deea7ed4d87ab 14
+helpers.js
+  s_ace75b123cb3fb::t_b03071a7a9c7a0 204,213
+  s_ace75b123cb3fb::t_83971800e18e60 7,13-14
+  s_ace75b123cb3fb::t_94283d4b224347 163
+  s_ace75b123cb3fb::t_be22e59cf5ce4e 52,54-56,60-62,66,69
+  s_ace75b123cb3fb::t_feb7881885d335 82
+  s_ace75b123cb3fb::t_2e012ec8fbe9bc 230
+  s_ace75b123cb3fb::t_33ead98bc1e7ed 126
+  s_ace75b123cb3fb::t_a6735dd756d807 15
+package.json
+  s_ace75b123cb3fb::t_35c4575e05555e 34-35,49
+package-lock.json
+  s_ace75b123cb3fb::t_bdc8470754c9e8 17-18,29,456-461,813-821,1355-1361,1554-1563,1772-1781,2137-2143,2684-2690,3003-3012,3333-3342,3530-3538,3771-3844,3887-3902,3932-3942,4010-4015,4082-4090,4165-4173,4180-4196,4445-4462,4535-4547,4679-4696
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "efc86276910ffbcd3360fbd2c4f2d656dae1ed9b",
+  "prompts": {},
+  "sessions": {
+    "s_11f1cbac148922": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd539ec8-fe28-4898-9cc7-32fadf766f22",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_ace75b123cb3fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e82aec2c-3828-4f66-9d05-df9175e26dd5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
