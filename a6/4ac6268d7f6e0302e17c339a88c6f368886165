@@ -1,0 +1,23 @@
+README.md
+  s_ace75b123cb3fb::t_d2892bcff9d178 81-91
+docker-compose.example.yml
+  s_ace75b123cb3fb::t_9e007253c78383 1-24
+.gitignore
+  s_ace75b123cb3fb::t_e013ef19da46e8 57-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a64ac6268d7f6e0302e17c339a88c6f368886165",
+  "prompts": {},
+  "sessions": {
+    "s_ace75b123cb3fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e82aec2c-3828-4f66-9d05-df9175e26dd5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
