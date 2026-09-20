@@ -249,6 +249,17 @@ test.serial('getStationAforoType propagates network errors', async (t) => {
 
 // ── Timeout → 500 ───────────────────────────────────────────────────────────
 
+test.serial('requests to SAIH use a 60s timeout', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: fixtureHTML });
+
+    try {
+        await getAllStationsAforo();
+        t.is(stub.firstCall.args[1].timeout, 60000);
+    } finally {
+        stub.restore();
+    }
+});
+
 test.serial('getAllStationsAforo throws UpstreamTimeoutError when SAIH does not answer in time', async (t) => {
     const timeoutError = new Error('timeout of 6000ms exceeded');
     timeoutError.code = 'ECONNABORTED';
@@ -352,6 +363,25 @@ test.serial('GET /station/aforo/:id/:type returns 404 when type not found for st
         const res = await request(app).get('/station/aforo/EA013/pluviometria');
         t.is(res.status, 404);
         t.truthy(res.body.error);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('getStationDetail does not cache a NotFoundError result', async (t) => {
+    // A station with no data yet (or a transient SAIH glitch) must not get
+    // permanently stuck as "not found" — the cache only ever remembers
+    // successful lookups, so the next call retries against SAIH.
+    const stub = sinon.stub(axios, 'get');
+    stub.onFirstCall().resolves({ data: '<html><body></body></html>' });
+    stub.onSecondCall().resolves({ data: stationDetailHTML });
+
+    try {
+        await t.throwsAsync(() => getStationDetail('EA013'));
+        const details = await getStationDetail('EA013');
+        t.true(Array.isArray(details));
+        t.true(details.length > 0);
+        t.is(stub.callCount, 2);
     } finally {
         stub.restore();
     }
