@@ -12,6 +12,45 @@ dayjs.extend(customParseFormat);
 const puntosDeControlURL = 'https://www.saihduero.es/resultados-risr?q=&tipo=TT';
 const baseURL = 'https://www.saihduero.es/';
 
+// Max time to wait for a response from SAIH before giving up.
+const REQUEST_TIMEOUT_MS = 6000;
+
+// Thrown when a station or a measurement type/element doesn't exist upstream.
+export class NotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'NotFoundError';
+        this.statusCode = 404;
+    }
+}
+
+// Thrown when SAIH doesn't answer within REQUEST_TIMEOUT_MS.
+export class UpstreamTimeoutError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'UpstreamTimeoutError';
+        this.statusCode = 500;
+    }
+}
+
+function isTimeoutError(error) {
+    return error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+}
+
+async function fetchSaih(url) {
+    try {
+        return await axios.get(url, { timeout: REQUEST_TIMEOUT_MS });
+    } catch (error) {
+        if (isTimeoutError(error)) {
+            throw new UpstreamTimeoutError(`SAIH did not respond within ${REQUEST_TIMEOUT_MS / 1000}s: ${url}`);
+        }
+        if (error.response?.status === 404) {
+            throw new NotFoundError(`Not found upstream: ${url}`);
+        }
+        throw error;
+    }
+}
+
 export function parseStationsHTML(html) {
     try {
         // Load with cheerio
@@ -157,54 +196,34 @@ export function parseStationAforoTypeHTML(html) {
 }
 
 export async function getAllStationsAforo() {
-    try {
-        // Fetch the HTML
-        const response = await axios.get(puntosDeControlURL);
-        const html = response.data;
-
-        // Parse and return
-        return parseStationsHTML(html);
-    } catch (error) {
-        console.error('Error fetching stations:', error.message);
-        return [];
-    }
+    // Let NotFoundError/UpstreamTimeoutError (and any other error) propagate to the caller.
+    const response = await fetchSaih(puntosDeControlURL);
+    return parseStationsHTML(response.data);
 }
 
 export async function getStationDetail(stationId) {
-    try {
-        const stationURL = `https://www.saihduero.es/risr/${stationId}`;
-        const response = await axios.get(stationURL);
-        const html = response.data;
+    const stationURL = `https://www.saihduero.es/risr/${stationId}`;
+    const response = await fetchSaih(stationURL);
+    const details = parseStationDetailHTML(response.data);
 
-        // Parse and return
-        return parseStationDetailHTML(html);
-    } catch (error) {
-        console.error('Error fetching station detail:', error.message);
-        return [];
+    if (details.length === 0) {
+        throw new NotFoundError(`Station "${stationId}" not found`);
     }
+
+    return details;
 }
 
 export async function getStationAforoType(stationId, type) {
-    try {
-        // First, get the station details to find the correct URL for the type
-        const details = await getStationDetail(stationId);
+    // Throws NotFoundError if the station itself doesn't exist.
+    const details = await getStationDetail(stationId);
 
-        // Find the entry matching the requested type
-        const typeEntry = details.find(item => item.type === type.toLowerCase());
+    // Find the entry matching the requested type
+    const typeEntry = details.find(item => item.type === type.toLowerCase());
 
-        if (!typeEntry) {
-            console.warn(`Type "${type}" not found for station ${stationId}`);
-            return [];
-        }
-
-        // Fetch the HTML from the type-specific URL
-        const response = await axios.get(typeEntry.url);
-        const html = response.data;
-
-        // Parse and return the chartData
-        return parseStationAforoTypeHTML(html);
-    } catch (error) {
-        console.error('Error fetching station aforo type:', error.message);
-        return [];
+    if (!typeEntry) {
+        throw new NotFoundError(`Type "${type}" not found for station ${stationId}`);
     }
+
+    const response = await fetchSaih(typeEntry.url);
+    return parseStationAforoTypeHTML(response.data);
 }

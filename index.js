@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllStationsAforo, getStationDetail, getStationAforoType } from './helpers.js';
+import { getAllStationsAforo, getStationDetail, getStationAforoType, NotFoundError, UpstreamTimeoutError } from './helpers.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -230,6 +230,13 @@ app.get('/station/aforo/:id/:type/graph', async (req, res, next) => {
 
 // Error handler
 app.use((err, req, res, _next) => {
+    if (err instanceof NotFoundError) {
+        return res.status(404).json({ error: err.message });
+    }
+    if (err instanceof UpstreamTimeoutError) {
+        console.error('SAIH timeout:', err.message);
+        return res.status(500).json({ error: 'SAIH did not respond in time' });
+    }
     console.error('Unhandled error:', err.message);
     res.status(500).json({ error: 'Internal server error' });
 });

@@ -11,7 +11,9 @@ import {
     parseStationAforoTypeHTML,
     getAllStationsAforo,
     getStationDetail,
-    getStationAforoType
+    getStationAforoType,
+    NotFoundError,
+    UpstreamTimeoutError
 } from '../helpers.js';
 import { app } from '../index.js';
 
@@ -207,34 +209,110 @@ test('parseStationAforoTypeHTML returns correct data format for caudal', (t) => 
 });
 
 // Tests for async functions with mocked axios - Error cases (these properly test error handling)
-test.serial('getAllStationsAforo returns empty array on network failure', async (t) => {
+test.serial('getAllStationsAforo propagates network errors', async (t) => {
     const stub = sinon.stub(axios, 'get').rejects(new Error('Network error'));
 
     try {
-        const result = await getAllStationsAforo();
-        t.deepEqual(result, []); // Function returns empty array on error
+        await t.throwsAsync(() => getAllStationsAforo(), { message: 'Network error' });
     } finally {
         stub.restore();
     }
 });
 
-test.serial('getStationDetail returns empty object on network failure', async (t) => {
+test.serial('getStationDetail propagates network errors', async (t) => {
     const stub = sinon.stub(axios, 'get').rejects(new Error('Station not found'));
 
     try {
-        const result = await getStationDetail('invalid');
-        t.deepEqual(result, []); // Function returns empty array on error
+        await t.throwsAsync(() => getStationDetail('invalid'), { message: 'Station not found' });
     } finally {
         stub.restore();
     }
 });
 
-test.serial('getStationAforoType returns empty array on network failure', async (t) => {
+test.serial('getStationAforoType propagates network errors', async (t) => {
     const stub = sinon.stub(axios, 'get').rejects(new Error('Data not available'));
 
     try {
-        const result = await getStationAforoType('aranda', 'nivel');
-        t.deepEqual(result, []); // Function returns empty array on error
+        await t.throwsAsync(() => getStationAforoType('aranda', 'nivel'), { message: 'Data not available' });
+    } finally {
+        stub.restore();
+    }
+});
+
+// ── Timeout → 500 ───────────────────────────────────────────────────────────
+
+test.serial('getAllStationsAforo throws UpstreamTimeoutError when SAIH does not answer in time', async (t) => {
+    const timeoutError = new Error('timeout of 6000ms exceeded');
+    timeoutError.code = 'ECONNABORTED';
+    const stub = sinon.stub(axios, 'get').rejects(timeoutError);
+
+    try {
+        const err = await t.throwsAsync(() => getAllStationsAforo());
+        t.true(err instanceof UpstreamTimeoutError);
+        t.is(err.statusCode, 500);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /station/aforo/all returns 500 when SAIH times out', async (t) => {
+    const timeoutError = new Error('timeout of 6000ms exceeded');
+    timeoutError.code = 'ECONNABORTED';
+    const stub = sinon.stub(axios, 'get').rejects(timeoutError);
+
+    try {
+        const res = await request(app).get('/station/aforo/all');
+        t.is(res.status, 500);
+    } finally {
+        stub.restore();
+    }
+});
+
+// ── Not found → 404 ──────────────────────────────────────────────────────────
+
+test.serial('getStationDetail throws NotFoundError when station has no historic links', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: '<html><body></body></html>' });
+
+    try {
+        const err = await t.throwsAsync(() => getStationDetail('EA000'));
+        t.true(err instanceof NotFoundError);
+        t.is(err.statusCode, 404);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('getStationAforoType throws NotFoundError when the type does not exist for the station', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: stationDetailHTML });
+
+    try {
+        const err = await t.throwsAsync(() => getStationAforoType('EA013', 'pluviometria'));
+        t.true(err instanceof NotFoundError);
+        t.is(err.statusCode, 404);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /station/aforo/:id returns 404 for a station without data', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: '<html><body></body></html>' });
+
+    try {
+        const res = await request(app).get('/station/aforo/EA000');
+        t.is(res.status, 404);
+        t.truthy(res.body.error);
+    } finally {
+        stub.restore();
+    }
+});
+
+test.serial('GET /station/aforo/:id/:type returns 404 when type not found for station', async (t) => {
+    const stub = sinon.stub(axios, 'get').resolves({ data: stationDetailHTML });
+
+    try {
+        const res = await request(app).get('/station/aforo/EA013/pluviometria');
+        t.is(res.status, 404);
+        t.truthy(res.body.error);
     } finally {
         stub.restore();
     }
