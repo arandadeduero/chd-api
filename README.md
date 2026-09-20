@@ -60,6 +60,24 @@ El servidor se ejecuta en `http://localhost:3000` por defecto. Se puede cambiar 
 npm run dev
 ```
 
+### Docker
+
+La imagen se publica automáticamente en el GitHub Container Registry (GHCR):
+
+```bash
+docker pull ghcr.io/arandadeduero/chd-api:latest
+docker run -d -p 3000:3000 --name chd-api ghcr.io/arandadeduero/chd-api:latest
+```
+
+El servidor estará disponible en `http://localhost:3000`. El puerto interno del contenedor se puede cambiar mediante la variable de entorno `PORT`.
+
+También se puede construir la imagen localmente:
+
+```bash
+docker build -t chd-api .
+docker run -d -p 3000:3000 --name chd-api chd-api
+```
+
 ### Tests
 
 ```bash
@@ -78,6 +96,10 @@ El proyecto utiliza GitHub Actions para ejecutar tests automáticamente:
 - Generación de reportes de cobertura
 
 El workflow de CI se encuentra en `.github/workflows/ci.yml`.
+
+### Publicación de la imagen Docker
+
+En cada push a `main` (y en cada tag `v*.*.*`), el workflow `.github/workflows/docker-publish.yml` construye la imagen y la publica en el GitHub Container Registry como [`ghcr.io/arandadeduero/chd-api`](https://github.com/arandadeduero/chd-api/pkgs/container/chd-api).
 
 ## Endpoints
 
