@@ -26,9 +26,9 @@
     "test": "c8 ava"
   },
   "dependencies": {
-    "axios": "^1.16.1",
+    "axios": "^1.20.0",
     "cheerio": "^1.2.0",
-    "dayjs": "^1.11.20",
+    "dayjs": "^1.11.23",
     "ejs": "^5.0.2",
     "express": "^5.2.1"
   },
@@ -39,11 +39,11 @@
     "@eslint/js": "^10.0.1",
     "ava": "^8.0.1",
     "c8": "^11.0.0",
-    "eslint": "^10.4.0",
-    "eslint-plugin-ava": "^17.0.0",
-    "globals": "^17.6.0",
+    "eslint": "^10.11.0",
+    "eslint-plugin-ava": "^17.0.1",
+    "globals": "^17.12.0",
     "nodemon": "^3.1.14",
-    "sinon": "^22.0.0",
+    "sinon": "^22.1.0",
     "supertest": "^7.2.2"
   }
 }
