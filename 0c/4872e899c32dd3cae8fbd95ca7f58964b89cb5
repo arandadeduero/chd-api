@@ -1,0 +1,23 @@
+tests/helpers.test.js
+  s_ace75b123cb3fb::t_1e93dd4cbb9566 271-301
+helpers.js
+  s_ace75b123cb3fb::t_b5f28c4dcb54b7 37-43,47,51,53,59
+index.js
+  s_ace75b123cb3fb::t_5c26f092a942dc 255,257,261,264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "0c4872e899c32dd3cae8fbd95ca7f58964b89cb5",
+  "prompts": {},
+  "sessions": {
+    "s_ace75b123cb3fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e82aec2c-3828-4f66-9d05-df9175e26dd5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
