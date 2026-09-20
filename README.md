@@ -78,6 +78,17 @@ docker build -t chd-api .
 docker run -d -p 3000:3000 --name chd-api chd-api
 ```
 
+#### Docker Compose
+
+Copia [`docker-compose.example.yml`](docker-compose.example.yml) a `docker-compose.yml` y levanta el servicio:
+
+```bash
+cp docker-compose.example.yml docker-compose.yml
+docker compose up -d
+```
+
+Usa la imagen publicada en GHCR, reinicia automáticamente el contenedor y comprueba `/health` mediante `healthcheck`. El puerto expuesto en el host se puede cambiar con la variable de entorno `PORT` (por defecto `3000`).
+
 ### Tests
 
 ```bash

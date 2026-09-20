@@ -54,3 +54,7 @@ build/
 # Temporary files
 tmp/
 temp/
+
+# Docker Compose (usa docker-compose.example.yml como plantilla)
+docker-compose.yml
+docker-compose.override.yml
