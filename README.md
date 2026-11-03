@@ -329,7 +329,7 @@ UTC: 2025-11-19T23:00:00.000Z
 
 ## Licencia
 
-ISC
+[Licencia Pública de la Unión Europea (EUPL) v1.2](LICENSE), © Ayuntamiento de Aranda de Duero. Es la licencia común de todo el software del Ayuntamiento: ver [arandadeduero/licencia](https://github.com/arandadeduero/licencia).
 
 ## Autor
 

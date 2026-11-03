@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/arandadeduero/chd-api.git"
   },
-  "license": "ISC",
+  "license": "EUPL-1.2",
   "author": "Guillermo Lopez <glopez@arandadeduero.es>",
   "type": "module",
   "main": "index.js",
